@@ -14,3 +14,7 @@ _site
 *.tgz
 .header.json
 .simstate.json
+
+# written at the repo root by `pxt target arcade` (see .devcontainer) to install the arcade target locally
+/package.json
+/package-lock.json

@@ -1,7 +1,7 @@
 {
     "name": "Zelda",
     "image": "mcr.microsoft.com/devcontainers/javascript-node:1-20",
-    "postCreateCommand": "npm install -g makecode",
+    "postCreateCommand": "npm install -g pxt makecode && pxt target arcade && pxt install",
     "customizations": {
         "vscode": {
             "extensions": [

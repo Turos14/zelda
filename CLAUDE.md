@@ -4,18 +4,20 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Repository overview
 
-This directory holds two unrelated, independent projects — there is no shared build system or code between them:
+This repository holds two unrelated, independent projects — there is no shared build system or code between them:
 
-- `Zelda 2/` — a MakeCode Arcade action game ("Zelda"-style) written in TypeScript against the PXT/MakeCode Arcade API.
-- `png-to-makecode/` — a standalone vanilla-JS/HTML/CSS web tool (no build step, no dependencies) that converts PNG images into MakeCode Arcade asset code, used to help hand-author art for `Zelda 2` (or any other MakeCode Arcade project).
+- The repository root — a MakeCode Arcade action game ("Zelda"-style) written in TypeScript against the PXT/MakeCode Arcade API (`pxt.json`, `main.ts`, `joueur.ts`, etc. — originally under a `Zelda 2/` subfolder, moved to the root).
+- `png-to-makecode/` — a standalone vanilla-JS/HTML/CSS web tool (no build step, no dependencies) that converts PNG images into MakeCode Arcade asset code, used to help hand-author art for the game (or any other MakeCode Arcade project).
 
-When asked to work "on the game," that means `Zelda 2/`; "the converter"/"asset tool" means `png-to-makecode/`.
+When asked to work "on the game," that means the root-level `.ts`/`pxt.json` files; "the converter"/"asset tool" means `png-to-makecode/`.
 
-## `Zelda 2/` — MakeCode Arcade game
+## MakeCode Arcade game (repository root)
 
 ### Development workflow
 
-This is a MakeCode Arcade project (`pxt.json`, `mkc.json`, `supportedTargets: ["arcade"]`), normally developed by importing/exporting this folder in the web editor at https://arcade.makecode.com/, or locally via the `mkc` CLI. CI (`.github/workflows/makecode.yml`) builds on every push via `npx makecode`. The repo's `.devcontainer/devcontainer.json` (used by GitHub Codespaces) installs the `makecode`/`mkc` CLI globally and recommends the `ms-edu.pxt-vscode-web` VS Code extension, which opens the MakeCode editor/simulator directly inside VS Code. `pxt_modules/` (vendored MakeCode dependencies) and `built/binary.js` are generated build artifacts, gitignored — never hand-edit them.
+This is a MakeCode Arcade project (`pxt.json`, `mkc.json`, `supportedTargets: ["arcade"]`), normally developed by importing/exporting in the web editor at https://arcade.makecode.com/, or locally via CLI. CI (`.github/workflows/makecode.yml`) builds on every push via `npx makecode` (the lightweight `makecode`/`mkc` npm package, which compiles against a cached virtual filesystem and never writes a physical `pxt_modules/` to disk). `pxt_modules/` and `built/binary.js` are generated build artifacts, gitignored — never hand-edit them.
+
+**TypeScript IntelliSense in VS Code / Codespaces:** plain TS IntelliSense only resolves MakeCode globals (`Sprite`, `sprites`, `game`, `tiles`, ...) if `pxt_modules/` physically exists on disk with real `.ts`/`.d.ts` files — `mkc`/`makecode` alone does not produce this, so a fresh clone shows "cannot find name" errors on every MakeCode API. `.devcontainer/devcontainer.json` fixes this by installing the classic `pxt` CLI (separate npm package from `makecode`) and running `pxt target arcade && pxt install` on container creation, which materializes a real `pxt_modules/`. If types are still unresolved (e.g. right after moving files, or on an already-running Codespace), rerun `npx pxt install` from the repo root and restart the TS server (Command Palette → "TypeScript: Restart TS Server"). The `ms-edu.pxt-vscode-web` extension (also recommended) offers an alternative MakeCode-aware editing/simulator experience that doesn't depend on `pxt_modules` at all.
 
 There's no automated test suite; verify behavior by reading the TypeScript logic and, where possible, importing the project into the MakeCode Arcade web editor to run it in the simulator.
 
@@ -53,5 +55,5 @@ Single-page vanilla HTML/CSS/JS (`index.html`, `script.js`, `palette.js`, `style
 - `script.js` has two modes (`mode`: `"img" | "tilemap"`):
   - **Image mode** — quantizes a dropped PNG to the MakeCode palette and emits an `img\`...\`` literal (as a `case` block for `images.g.ts`, a bare `const`, or raw), with optional resizing and an alpha transparency threshold.
   - **Tilemap mode** — quantizes and packs pixels into MakeCode's binary tile format, then either *"Nouvelle tuile"* (appends one new tile to a dropped `tilemap.g.jres`/`tilemap.g.ts` pair) or *"Carte complète"* (slices a whole image into tiles, dedupes against the existing tileset, and emits one or more `tiles.createTilemap(...)` blocks — splitting into multiple tilemaps when a region would exceed the configurable max-distinct-tiles-per-map, since MakeCode caps a tileset at 255 tiles).
-- Output is meant to be pasted directly into a MakeCode Arcade project's generated asset files (e.g. `Zelda 2/images.g.ts`, `tilemap.g.jres`/`tilemap.g.ts`). It edits/inserts using the exact `//% fixedInstance jres blockIdentity=images._tile` / `TileScale.*` code shapes MakeCode itself generates, so its output can be appended to real project files without a full re-export from the web editor.
+- Output is meant to be pasted directly into the MakeCode Arcade game's generated asset files at the repo root (`images.g.ts`, `tilemap.g.jres`/`tilemap.g.ts`), or any other MakeCode Arcade project's. It edits/inserts using the exact `//% fixedInstance jres blockIdentity=images._tile` / `TileScale.*` code shapes MakeCode itself generates, so its output can be appended to real project files without a full re-export from the web editor.
 - All UI strings are French — keep new strings consistent with the existing tone.
