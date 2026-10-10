@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>PNG → MakeCode Arcade (img`...`)</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <div class="header-top">
+            <div>
+                <h1>PNG → MakeCode Arcade</h1>
+                <p class="subtitle" id="subtitleImg">Glisse une image, récupère le code <code>img\`...\`</code> prêt à coller dans un fichier .ts</p>
+                <p class="subtitle" id="subtitleTilemap" hidden>Glisse une image, puis tes fichiers <code>tilemap.g.jres</code> et <code>tilemap.g.ts</code> existants : ajoute une tuile, ou génère une carte complète</p>
+            </div>
+            <div class="mode-toggle" id="modeToggle">
+                <button type="button" class="mode-btn active" data-mode="img">Image</button>
+                <button type="button" class="mode-btn" data-mode="tilemap">Tuilemap</button>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <section id="dropzone" class="dropzone">
+            <p id="dropzoneText">Glisse une image ici, ou clique pour en choisir une</p>
+            <input type="file" id="fileInput" accept="image/*" hidden>
+        </section>
+
+        <div class="mode-toggle sub-toggle" id="tilemapSubToggle" hidden>
+            <button type="button" class="mode-btn active" data-submode="tile">Nouvelle tuile</button>
+            <button type="button" class="mode-btn" data-submode="map">Carte complète (tuilemap)</button>
+        </div>
+
+        <section class="tilemap-files" id="tilemapFiles" hidden>
+            <div class="dropzone dropzone-small" id="jresDropzone">
+                <p id="jresDropzoneText">Glisse ton fichier tilemap.g.jres existant</p>
+                <input type="file" id="jresInput" accept=".jres,application/json" hidden>
+            </div>
+            <div class="dropzone dropzone-small" id="tsDropzone">
+                <p id="tsDropzoneText">Glisse ton fichier tilemap.g.ts existant</p>
+                <input type="file" id="tsInput" accept=".ts,text/plain" hidden>
+            </div>
+        </section>
+
+        <section class="options" id="options" hidden>
+            <div class="option" id="optAssetName">
+                <label for="assetName" id="assetNameLabel">Nom de l'asset</label>
+                <input type="text" id="assetName" value="monImage" spellcheck="false">
+            </div>
+            <div class="option" id="optMapName" hidden>
+                <label for="mapName">Nom de la carte (base)</label>
+                <input type="text" id="mapName" value="maCarte" spellcheck="false">
+            </div>
+            <div class="option" id="optAlias">
+                <label for="aliasName">Alias (optionnel, 2e <code>case</code>)</label>
+                <input type="text" id="aliasName" placeholder="ex: chuchu" spellcheck="false">
+            </div>
+            <div class="option" id="optFormat">
+                <label for="outputFormat">Format de sortie</label>
+                <select id="outputFormat">
+                    <option value="case">Bloc case (images.g.ts)</option>
+                    <option value="const">const nom = img`...`</option>
+                    <option value="raw">img`...` seul</option>
+                </select>
+            </div>
+            <div class="option" id="optSpaced">
+                <label for="spaced">Style</label>
+                <select id="spaced">
+                    <option value="spaced">Espacé (". . f f")</option>
+                    <option value="compact">Compact ("..ff")</option>
+                </select>
+            </div>
+            <div class="option">
+                <label for="threshold">Seuil de transparence : <span id="thresholdValue">128</span></label>
+                <input type="range" id="threshold" min="0" max="255" value="128">
+            </div>
+            <div class="option" id="optTargetWidth">
+                <label for="targetWidth" id="targetWidthLabel">Largeur cible en px (optionnel, redimensionne sans flou)</label>
+                <input type="number" id="targetWidth" min="1" placeholder="ex: 16 (vide = taille d'origine)">
+            </div>
+            <div class="option" id="optTileScale" hidden>
+                <label for="tileScale">Taille de la tuile</label>
+                <select id="tileScale">
+                    <option value="8">8 × 8</option>
+                    <option value="16" selected>16 × 16</option>
+                    <option value="32">32 × 32</option>
+                </select>
+            </div>
+            <div class="option" id="optMaxTileLength" hidden>
+                <label for="maxTileLength">Longueur max en tuiles par tuilemap (largeur ou hauteur)</label>
+                <input type="number" id="maxTileLength" min="1" value="64">
+            </div>
+            <div class="option">
+                <span id="dimsInfo" class="dims-info"></span>
+            </div>
+        </section>
+
+        <section class="preview" id="previewSection" hidden>
+            <div class="preview-col">
+                <h2>Original</h2>
+                <canvas id="originalCanvas"></canvas>
+            </div>
+            <div class="preview-col">
+                <h2>Résultat (palette MakeCode)</h2>
+                <canvas id="resultCanvas"></canvas>
+            </div>
+        </section>
+
+        <section class="output" id="outputSectionImg" hidden>
+            <div class="output-header">
+                <h2>Code</h2>
+                <button id="copyBtn">Copier</button>
+            </div>
+            <textarea id="outputCode" spellcheck="false" readonly></textarea>
+        </section>
+
+        <section class="output" id="outputSectionTilemap" hidden>
+            <p class="hint" id="tilemapStatus"></p>
+            <div class="output-header">
+                <h2>tilemap.g.jres (mis à jour)</h2>
+                <button id="copyJresBtn">Copier</button>
+            </div>
+            <textarea id="outputJres" spellcheck="false" readonly></textarea>
+            <div class="output-header output-header-spaced">
+                <h2>tilemap.g.ts (mis à jour)</h2>
+                <button id="copyTsBtn">Copier</button>
+            </div>
+            <textarea id="outputTs" spellcheck="false" readonly></textarea>
+        </section>
+    </main>
+
+    <script src="palette.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
