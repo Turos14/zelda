@@ -15,7 +15,7 @@ When asked to work "on the game," that means `Zelda 2/`; "the converter"/"asset 
 
 ### Development workflow
 
-There is no local build/lint/test tooling available in this environment (no `mkc`/`pxt` CLI installed, no `package.json`). This is a MakeCode Arcade project (`pxt.json`, `mkc.json`, `supportedTargets: ["arcade"]`), normally developed by importing/exporting this folder in the web editor at https://arcade.makecode.com/, or locally via the `mkc` CLI if it's installed. CI (`.github/workflows/makecode.yml`) builds on every push via `npx makecode`. `pxt_modules/` (vendored MakeCode dependencies) and `built/binary.js` are generated build artifacts, gitignored — never hand-edit them.
+This is a MakeCode Arcade project (`pxt.json`, `mkc.json`, `supportedTargets: ["arcade"]`), normally developed by importing/exporting this folder in the web editor at https://arcade.makecode.com/, or locally via the `mkc` CLI. CI (`.github/workflows/makecode.yml`) builds on every push via `npx makecode`. The repo's `.devcontainer/devcontainer.json` (used by GitHub Codespaces) installs the `makecode`/`mkc` CLI globally and recommends the `ms-edu.pxt-vscode-web` VS Code extension, which opens the MakeCode editor/simulator directly inside VS Code. `pxt_modules/` (vendored MakeCode dependencies) and `built/binary.js` are generated build artifacts, gitignored — never hand-edit them.
 
 There's no automated test suite; verify behavior by reading the TypeScript logic and, where possible, importing the project into the MakeCode Arcade web editor to run it in the simulator.
 
@@ -47,7 +47,7 @@ Comments and identifiers are in French (`dégats`, `vie`, `épée`, etc.) — ke
 
 ## `png-to-makecode/` — PNG-to-MakeCode asset converter
 
-Single-page vanilla HTML/CSS/JS (`index.html`, `script.js`, `palette.js`, `style.css`), no build step, no dependencies — open `index.html` directly in a browser to work on or test it.
+Single-page vanilla HTML/CSS/JS (`index.html`, `script.js`, `palette.js`, `style.css`), no build step, no dependencies — open `index.html` directly in a browser to work on or test it. In Codespaces, use the `ms-vscode.live-server` extension (recommended via the devcontainer) to preview it through the forwarded port instead.
 
 - `palette.js` defines `MAKECODE_PALETTE`, the fixed 16-color MakeCode Arcade palette (index 0 always transparent), mapping each palette hex digit (`.`, `1`–`9`, `a`–`f`) to an RGB triple.
 - `script.js` has two modes (`mode`: `"img" | "tilemap"`):
