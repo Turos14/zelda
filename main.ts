@@ -64,9 +64,9 @@ game.onUpdate(function () {
 })
 
 
-gerudoBoss();
-piafBoss();
-zoraBoss();
+// gerudoBoss();
+// piafBoss();
+// zoraBoss();
 
 while (!(link.x >= 15 * 15)) {
     controller.moveSprite(link, 100, 100)
