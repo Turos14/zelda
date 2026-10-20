@@ -115,52 +115,7 @@ game.onUpdateInterval(5000, function () {
 
 //#endregion
 
-function tile_center(tuile: any[]) {
-    let i = tuile.length
-    let p = 0
-    for (let o = 0; o < i; o++) {
-        if (link.tileKindAt(TileDirection.Center, tuile[o])) {
-            p += 1
-        }
-    }
 
-    if (p != 0) {
-        return (true);
-    } else {
-        return (false);
-    }
-}
-
-let miasmeTiles = [
-    assets.tile`myTile15`,
-    assets.tile`myTile24`,
-    assets.tile`myTile50`,
-    assets.tile`myTile51`,
-    assets.tile`myTile52`,
-    assets.tile`myTile53`,
-    assets.tile`myTile54`,
-    assets.tile`myTile55`,
-    assets.tile`myTile56`,
-    assets.tile`myTile57`,
-    assets.tile`myTile58`,
-    assets.tile`myTile59`,
-    assets.tile`myTile60`,
-    assets.tile`myTile61`,
-    assets.tile`myTile63`,
-    assets.tile`myTile64`,
-    assets.tile`myTile65`,
-    assets.tile`myTile66`,
-    assets.tile`myTile67`,
-    assets.tile`myTile69`,
-    assets.tile`myTile70`,
-    assets.tile`myTile71`,
-] 
-
-function miasme() {
-    if (tile_center(miasmeTiles)) {
-        sprites.changeDataNumberBy(link, "vie", -20)
-    }
-}
 //#endregion
 
 //#region --- 5. fonction de boucle
