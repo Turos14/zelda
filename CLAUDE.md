@@ -19,13 +19,18 @@ This is a MakeCode Arcade project (`pxt.json`, `mkc.json`, `supportedTargets: ["
 
 **TypeScript IntelliSense in VS Code / Codespaces:** plain TS IntelliSense only resolves MakeCode globals (`Sprite`, `sprites`, `game`, `tiles`, ...) if `pxt_modules/` physically exists on disk with real `.ts`/`.d.ts` files — `mkc`/`makecode` alone does not produce this, so a fresh clone shows "cannot find name" errors on every MakeCode API. `.devcontainer/devcontainer.json` fixes this by installing the classic `pxt` CLI (separate npm package from `makecode`) and running `pxt target arcade && pxt install` on container creation, which materializes a real `pxt_modules/`. If types are still unresolved (e.g. right after moving files, or on an already-running Codespace), rerun `npx pxt install` from the repo root and restart the TS server (Command Palette → "TypeScript: Restart TS Server"). The `ms-edu.pxt-vscode-web` extension (also recommended) offers an alternative MakeCode-aware editing/simulator experience that doesn't depend on `pxt_modules` at all.
 
+Build/compile-check commands (run from the repo root):
+
+- `npx makecode build -j` — compiles to JavaScript for the simulator (`built/binary.js`). This is the reliable type-check: use it after any `.ts` change.
+- `npx makecode` (what CI runs) — native build, defaulting to the `n3` hardware variant. It currently fails with `program too big by ~95000 bytes` (large tilemaps/images exceed that variant's flash), on `HEAD` as well, so a red CI run is not by itself a sign your change broke something — check with `-j`.
+
 There's no automated test suite; verify behavior by reading the TypeScript logic and, where possible, importing the project into the MakeCode Arcade web editor to run it in the simulator.
 
 Formatting follows `.prettierrc`: `arrowParens: avoid`, `semi: false`, `tabWidth: 4`. Match this in `.ts` files.
 
 ### File load order and architecture
 
-`pxt.json`'s `files` array is the authoritative compile order, and matches the numbered `//#region` headers (1–9) at the top of each file. Everything is global/top-level — no modules, no classes — so functions and `let`/`const` state declared in one file are used directly by later files, per the MakeCode Arcade "single program" model:
+`pxt.json`'s `files` array is the authoritative compile order, and the files' `//#region --- N. ... ---` headers roughly follow it (their numbers don't match the list below one-to-one — trust `pxt.json`). When adding, splitting or renaming a `.ts` file, update `pxt.json`'s `files` or it won't be compiled. Everything is global/top-level — no modules, no classes — so functions and `let`/`const` state declared in one file are used directly by later files, per the MakeCode Arcade "single program" model:
 
 1. `images.g.jres` / `images.g.ts` — generated image/animation assets (`assets.image\`...\``, `assets.animation\`...\``). Header says "Auto-generated code. Do not edit." — regenerate via the MakeCode asset editor or `png-to-makecode`, don't hand-edit.
 2. `tilemap.g.jres` / `tilemap.g.ts` — generated tilesets/tilemaps (`tilemap\`...\``, `assets.tile\`...\``). Same: generated, don't hand-edit directly.
