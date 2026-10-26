@@ -4,7 +4,7 @@
 function enduF() {
     if (enduV > 0 && enduR) { // enduR = true || false / quand l'endu est à zero cette variable permet de dire de rajouté de l'endu et baissé sa vitesse 
         if (controller.left.isPressed() || controller.up.isPressed() || controller.down.isPressed() || controller.right.isPressed()) {
-            enduV -= 10 // valeur de l'endu
+            enduV = Math.max(0, enduV - 10) // valeur de l'endu, jamais négative
         } else {
             if (enduV < 100) {
                 enduV += 5
@@ -83,11 +83,12 @@ function miasme() {
 //#region nouriture
 let exe = 0 // éxécution
 
-/** toutes les 10 éxécution enlève 5 à la barre de nouriture ou 10 à la vie de link */
+/** toutes les 10 éxécution enlève 10 à la barre de nouriture ou 5 à la vie de link */
 function nouriture() {
-    if (exe == 10) {
+    if (exe >= 10) {
         if (barreFoodJoueur.value > 0) barreFoodJoueur.value -= 10
         if (barreFoodJoueur.value == 0) sprites.changeDataNumberBy(link, "vie", -5)
+        exe = 0 // sinon la faim ne baisse qu'une seule fois
     }
     exe += 1
 }
