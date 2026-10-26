@@ -45,7 +45,7 @@ game.onUpdate(function () { // forever mais qui fait moins beuguer le jeu
     /**détruit tout les monstre si le niveau de fps et trop bas */
     fps()
 
-    
+
 })
 
 //#endregion

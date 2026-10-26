@@ -1,23 +1,25 @@
 //#region endu
+
+/** éxécuté toute les 500 ms enlève ou rajoute de l'endu */
 function enduF() {
-    if (enduV > 0 && enduR) {
+    if (enduV > 0 && enduR) { // enduR = true || false / quand l'endu est à zero cette variable permet de dire de rajouté de l'endu et baissé sa vitesse 
         if (controller.left.isPressed() || controller.up.isPressed() || controller.down.isPressed() || controller.right.isPressed()) {
-            enduV -= 10
+            enduV -= 10 // valeur de l'endu
         } else {
             if (enduV < 100) {
                 enduV += 5
             }
         }
-        controller.moveSprite(link, 100, 100)
+        controller.moveSprite(link, 100, 100) // vxM = vyM = 100
     } else {
         enduR = false
         enduV += 5
         if (enduV == 100) {
             enduR = true
         }
-        controller.moveSprite(link, 50, 50)
+        controller.moveSprite(link, 50, 50) // vxM = vyM = 50
     }
-    barreEnduJoueur.value = enduV
+    barreEnduJoueur.value = enduV// mais a jour la bar de vie
 }
 
 //#endregion
@@ -78,8 +80,10 @@ function miasme() {
 
 //#endregion
 
-let exe = 0
 //#region nouriture
+let exe = 0 // éxécution
+
+/** toutes les 10 éxécution enlève 5 à la barre de nouriture ou 10 à la vie de link */
 function nouriture() {
     if (exe == 10) {
         if (barreFoodJoueur.value > 0) barreFoodJoueur.value -= 10

@@ -1,4 +1,5 @@
-//#region --- 3. JEU : JOUEUR & COMBAT ---
+//#region fps
+
 let fpsActuel = 2000 // variable quis retourne le nombre actuelle de fps
 let tempsPrecedent = game.runtime()
 let compteurFrames = 0
@@ -13,11 +14,13 @@ game.onUpdate(function () {
     }
 })
 
-let tempsEpee = game.runtime()
+//#endregion
+
+//#region épée
+
 let épée_sprite: any = null
 
 function coup_épée() {
-    tempsEpee = game.runtime()
     coup = 1;
     épée_sprite = sprites.create(assets.image`arme`, SpriteKind.épée) // créé un sprite a chaque fois
     let animEpee = assets.animation`épée`
@@ -30,11 +33,16 @@ function coup_épée() {
     sprites.destroy(épée_sprite) // détruit le sprite pour ne pas avoir plein d'épée partout
 }
 
+/** place l'épée de link en combat */
 function epeeForever() {
     if (épée_sprite != null) {
         épée_sprite.setPosition(link.x - 12, link.y + 3) // l'épée suit link mais avec un décalage pour que le menche soit dans la main de link
     }
 }
+
+//#endregion
+
+//#region vie
 
 function change_vie(dégats_en: number, enemi: Sprite, dégats_link: number) {
     if (coup == 0) {  // si link n'est pas en train de donner un coup d'épée
@@ -92,18 +100,6 @@ function change_vie_boss(dégats_en: number, boss: Sprite, dégats_link: number)
     }
 }
 
-function verifier_mort_link() {
-    let vieL = sprites.readDataNumber(link, "vie")
-    link.say(`Vie: ${vieL}`) // link a au dessus de sa tête ecri sa vie restante
-
-    /** tue link ou bloc link */ 
-    if (vieL <= 0) {  
-        game.popScene()
-        game.showLongText("Score final : " + score, DialogLayout.Center)
-        game.gameOver(false)
-    } else if (vieL > 100) {
-        sprites.setDataNumber(link, "vie", 100)
-        barreVieJoueur.value = 100
-    }
-}
 //#endregion
+
+coffre

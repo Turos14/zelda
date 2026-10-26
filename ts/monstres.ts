@@ -1,3 +1,5 @@
+
+
 //#region --- 4. JEU : MONSTRES & ENVIRONNEMENT ---
 
 let animation2: Image[][] = [
@@ -18,20 +20,6 @@ function si_tuile_cree_monstre(sur_bonne_tuile: boolean, myImage: Image, id_anim
     }
 }
 
-function coffre() {
-    if (link.tileKindAt(TileDirection.Center, assets.tile`myTile16`)) {
-        dialogue.setFlag(SpriteFlag.Invisible, false)
-        dialogue.setPosition(link.x, link.y - 16)
-        dialogue.sayText("A : ouvrir le coffre")
-        if (controller.A.isPressed()) {
-            tiles.setTileAt(link.tilemapLocation(), assets.tile`myTile17`)
-            sprites.changeDataNumberBy(link, "vie", 20)
-            barreFoodJoueur.value += 20
-        }
-    } else {
-        dialogue.setFlag(SpriteFlag.Invisible, true)
-    }
-}
 
 function creer_Monstre(monstre: Sprite, dégats: number, vie: number) {
     nombre_de_monstre += 1
