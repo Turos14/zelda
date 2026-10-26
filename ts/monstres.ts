@@ -72,6 +72,9 @@ function creer_likelike() {
             sprites.setDataSprite(likelike, "statubar", barre_likelike)
             // On l'enregistre dans la liste pour qu'il lance des trucs sur link
             likelike_list.push(likelike)
+            likelike.onDestroyed(function () {
+                likelike_list.removeElement(likelike) // un likelike mort ne doit plus tirer
+            })
         }
     }
 }
