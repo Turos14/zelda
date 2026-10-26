@@ -60,11 +60,12 @@ barreFoodJoueur.setLabel("co", 15)
 barreFoodJoueur.setBarBorder(1, 13)
 
 const argent = statusbars.create(52, 6, StatusBarKind.Health);
+argent.value = 0
 argent.setColor(4, 10)
 argent.positionDirection(CollisionDirection.Top)
 argent.setOffsetPadding(-90, 34)
 argent.setStatusBarFlag(StatusBarFlag.SmoothTransition, true)
-argent.setLabel("co", 15)
+argent.setLabel("RU", 15)
 argent.setBarBorder(1, 13)
 
 game.onUpdate(function () {
