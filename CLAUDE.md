@@ -6,10 +6,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 This repository holds two unrelated, independent projects — there is no shared build system or code between them:
 
-- The repository root — a MakeCode Arcade action game ("Zelda"-style) written in TypeScript against the PXT/MakeCode Arcade API (`pxt.json`, `main.ts`, `joueur.ts`, etc. — originally under a `Zelda 2/` subfolder, moved to the root).
+- The repository root — a MakeCode Arcade action game ("Zelda"-style) written in TypeScript against the PXT/MakeCode Arcade API (`pxt.json`, generated assets and `main.ts` at the root, hand-written game logic under `ts/`). It originally lived under a `Zelda 2/` subfolder; what remains there is leftover build output, not source.
 - `png-to-makecode/` — a standalone vanilla-JS/HTML/CSS web tool (no build step, no dependencies) that converts PNG images into MakeCode Arcade asset code, used to help hand-author art for the game (or any other MakeCode Arcade project).
 
-When asked to work "on the game," that means the root-level `.ts`/`pxt.json` files; "the converter"/"asset tool" means `png-to-makecode/`.
+When asked to work "on the game," that means `pxt.json`, the root `.g.*`/`main.ts` files and `ts/*.ts`; "the converter"/"asset tool" means `png-to-makecode/`.
 
 ## MakeCode Arcade game (repository root)
 
@@ -30,18 +30,22 @@ Formatting follows `.prettierrc`: `arrowParens: avoid`, `semi: false`, `tabWidth
 
 ### File load order and architecture
 
-`pxt.json`'s `files` array is the authoritative compile order, and the files' `//#region --- N. ... ---` headers roughly follow it (their numbers don't match the list below one-to-one — trust `pxt.json`). When adding, splitting or renaming a `.ts` file, update `pxt.json`'s `files` or it won't be compiled. Everything is global/top-level — no modules, no classes — so functions and `let`/`const` state declared in one file are used directly by later files, per the MakeCode Arcade "single program" model:
+`pxt.json`'s `files` array is the authoritative compile order and list of paths, and the files' `//#region --- N. ... ---` headers roughly follow it (their numbers don't match the list below one-to-one — trust `pxt.json`). When adding, splitting, renaming or moving a `.ts`/`.jres` file, update its path in `pxt.json`'s `files` — a listed path that doesn't exist makes the build fail with `ENOENT`, an unlisted file is silently not compiled. Everything is global/top-level — no modules, no classes — so functions and `let`/`const` state declared in one file are used directly by later files, per the MakeCode Arcade "single program" model:
 
 1. `images.g.jres` / `images.g.ts` — generated image/animation assets (`assets.image\`...\``, `assets.animation\`...\``). Header says "Auto-generated code. Do not edit." — regenerate via the MakeCode asset editor or `png-to-makecode`, don't hand-edit.
 2. `tilemap.g.jres` / `tilemap.g.ts` — generated tilesets/tilemaps (`tilemap\`...\``, `assets.tile\`...\``). Same: generated, don't hand-edit directly.
-3. `spriteKinds.ts` — screen size (`userconfig.ARCADE_SCREEN_WIDTH/HEIGHT`) and custom `SpriteKind`s (`épée`, `aide`, `likelikeKind`, `BossGerudo`, `BossZora`, `BossPiaf`).
-4. `joueur.ts` — player (`link`) sprite setup, health bar, and shared top-level game state (`score`, `coup`, `nombre_de_monstre`, `dialogue`, etc.) declared as module-scope `let`/`const` — later files read and mutate these directly.
-5. `combat.ts` — FPS tracking, sword-swing (`coup_épée`, `epeeForever`) and damage/health functions (`change_vie`, `change_vie_likelike`, `change_vie_boss`).
-6. `monstres.ts` — enemy spawning/behavior and chest interaction (`coffre`, `creer_Monstre`, `si_tuile_cree_monstre`, `miasme`, `fps`, `creer_likelike`).
-7. `gerudo_boss.ts`, `zora_boss.ts`, `piaf_boss.ts` — one boss fight each (`gerudoBoss()`, etc.); each is self-contained, creating its sprite, a health bar destroyed `onDestroyed`, and a `game.onUpdateInterval` distance-driven AI loop.
-8. `outils.ts` — small map-size/tile-distance math helpers (`NbC`, `NbL`, `obtenirDistanceTuileLaPlusProche`).
-9. `controles.ts` — global input/collision wiring (`controller.B.onEvent`, `sprites.onOverlap` for player vs. enemy/projectile/likelike/each boss kind).
-10. `main.ts` — entry point: sets the initial tilemap, spawns intro sprites, drives the scripted opening (dialogue, triggering `gerudoBoss()`, a walk-to-x gate), then starts the game's two main `game.onUpdate` loops.
+3. `ts/spriteKinds.ts` — screen size (`userconfig.ARCADE_SCREEN_WIDTH/HEIGHT`) and custom `SpriteKind`s (`épée`, `aide`, `likelikeKind`, `BossGerudo`, `BossZora`, `BossPiaf`).
+4. `ts/joueur.ts` — player (`link`) sprite setup, health bar, and shared top-level game state (`score`, `coup`, `nombre_de_monstre`, `dialogue`, etc.) declared as module-scope `let`/`const` — later files read and mutate these directly.
+5. `ts/combat.ts` — sword-swing (`coup_épée`, `epeeForever`) and damage/health functions (`change_vie`, `change_vie_likelike`, `change_vie_boss`).
+6. `ts/monstres.ts` — enemy spawning/behavior and chest interaction (`coffre`, `creer_Monstre`, `si_tuile_cree_monstre`, `fps`, `creer_likelike`).
+7. `ts/gerudo_boss.ts`, `ts/zora_boss.ts`, `ts/piaf_boss.ts` — one boss fight each (`gerudoBoss()`, etc.); each is self-contained, creating its sprite, a health bar destroyed `onDestroyed`, and a `game.onUpdateInterval` distance-driven AI loop.
+8. `ts/outils.ts` — small map-size/tile-distance math helpers (`NbC`, `NbL`, `obtenirDistanceTuileLaPlusProche`).
+9. `ts/controles.ts` — global input/collision wiring (`controller.B.onEvent`, `sprites.onOverlap` for player vs. enemy/projectile/likelike/each boss kind).
+10. `ts/prepare_main.ts` — game start, executed as top-level code: stamina state (`enduV`, `enduR`), initial tilemap, intro sprites, the scripted opening (dialogue, triggering `gerudoBoss()`, a walk-to-x gate).
+11. `ts/forever.ts` — the recurring loops: stamina (`enduF`), `miasme`, `nouriture`, `tile_center`, plus the main `game.onUpdateInterval(500, …)` / `game.onUpdate` loops.
+12. `main.ts` — kept as the last entry of `files` but currently empty; game logic belongs in `ts/`.
+
+Because top-level statements run in `files` order, code in `prepare_main.ts` that blocks (`game.showLongText`, `pause`, waiting loops) delays registration of the loops in `forever.ts`.
 
 Comments and identifiers are in French (`dégats`, `vie`, `épée`, etc.) — keep new code consistent with that.
 
