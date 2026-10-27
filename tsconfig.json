@@ -6,10 +6,11 @@
         "rootDir": "."
     },
     "include": [
-        "**/*.ts"
+        "*.ts",
+        "ts/**/*.ts",
+        "pxt_modules/**/*.ts"
     ],
     "exclude": [
-        "built/**",
         "pxt_modules/**/*test.ts"
     ]
 }
