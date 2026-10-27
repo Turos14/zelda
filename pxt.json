@@ -1,6 +1,12 @@
 {
     "name": "Zelda 2",
     "version": "1.0.0",
+    "dependencies": {
+        "device": "*",
+        "status-bar": "github:jwunderl/pxt-status-bar#v0.4.2",
+        "arcade-sprite-data": "github:microsoft/arcade-sprite-data#v0.2.1",
+        "arcade-text": "github:microsoft/arcade-text#v1.3.0"
+    },
     "files": [
         "images.g.jres",
         "images.g.ts",
@@ -21,14 +27,8 @@
         "ts/forever.ts",
         "main.ts"
     ],
+    "testDependencies": {},
     "supportedTargets": [
         "arcade"
-    ],
-    "dependencies": {
-        "device": "*",
-        "status-bar": "github:jwunderl/pxt-status-bar#v0.4.2",
-        "arcade-sprite-data": "github:microsoft/arcade-sprite-data#v0.2.1",
-        "arcade-text": "github:microsoft/arcade-text#v1.3.0"
-    },
-    "testDependencies": {}
+    ]
 }
