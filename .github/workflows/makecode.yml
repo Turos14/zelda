@@ -7,7 +7,8 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           submodules: recursive
-      - run: npx makecode
+      # -j : compile pour le simulateur (le jeu est trop gros pour la console n3 par défaut)
+      - run: npx makecode build -j
