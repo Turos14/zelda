@@ -82,3 +82,34 @@ function epona_relais_new() {
         }
     }
 }
+
+let épée_sprite: any = null
+
+function epeeForever() {
+    if (épée_sprite != null) {
+        épée_sprite.setPosition(link.x - 12, link.y + 3) // l'épée suit link mais avec un décalage pour que le menche soit dans la main de link
+    }
+}
+
+function coup_épée() {
+    if (épée_sprite != null) return // un coup est déjà en cours : sinon l'ancienne épée n'est jamais détruite
+    coup = 1;
+    épée_sprite = sprites.create(assets.image`arme`, SpriteKind.épée) // créé un sprite a chaque fois
+    let animEpee = assets.animation`épée`
+    if (animEpee) {
+        animation.runImageAnimation(épée_sprite, animEpee, 200, false)
+    }
+    pause(600)
+    coup = 0
+    pause(100)
+    sprites.destroy(épée_sprite) // détruit le sprite pour ne pas avoir plein d'épée partout
+    épée_sprite = null
+}
+
+/** place l'épée de link en combat */
+
+
+game.onUpdate(function () {
+    epeeForever()
+    argent.value = rubis
+})

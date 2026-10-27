@@ -1,0 +1,5 @@
+créer un comite a poussé
+git commit -m "Ton message"
+
+pousse le comite
+git push

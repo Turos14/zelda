@@ -16,35 +16,6 @@ game.onUpdate(function () {
 
 //#endregion
 
-//#region épée
-
-let épée_sprite: any = null
-
-function coup_épée() {
-    if (épée_sprite != null) return // un coup est déjà en cours : sinon l'ancienne épée n'est jamais détruite
-    coup = 1;
-    épée_sprite = sprites.create(assets.image`arme`, SpriteKind.épée) // créé un sprite a chaque fois
-    let animEpee = assets.animation`épée`
-    if (animEpee) {
-        animation.runImageAnimation(épée_sprite, animEpee, 200, false)
-    }
-    epeeForever() // place l'épée tout de suite, sinon elle apparaît une frame en (0, 0)
-    pause(600)
-    coup = 0
-    pause(100)
-    sprites.destroy(épée_sprite) // détruit le sprite pour ne pas avoir plein d'épée partout
-    épée_sprite = null
-}
-
-/** place l'épée de link en combat */
-function epeeForever() {
-    if (épée_sprite != null) {
-        épée_sprite.setPosition(link.x - 12, link.y + 3) // l'épée suit link mais avec un décalage pour que le menche soit dans la main de link
-    }
-}
-
-//#endregion
-
 //#region vie
 
 function change_vie(dégats_en: number, enemi: Sprite, dégats_link: number) {
