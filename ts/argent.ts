@@ -17,6 +17,9 @@ function coffre() {
             } else {
                 plus_rubis = randint(1, 10);
                 rubis += plus_rubis;
+                if (rubis > 100) {
+                    rubis = 100
+                }
                 argent.value = rubis
             }
         }
