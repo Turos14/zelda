@@ -100,7 +100,7 @@ function epona_relais_new() {
 }
 
 game.onUpdate(function () {
-    if (epona != null) {
+    if (epona != null) { // le cheval suit link une fois arrivé
         epona.x = link.x
         epona.y = link.y
         controller.moveSprite(link, 200, 200)
