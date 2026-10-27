@@ -94,7 +94,13 @@ function epona_relais_new() {
                 epona.x = link.x
                 epona.y = link.y
                 epona_arrive = false
+                controller.moveSprite(link, 200, 200)
             })
+        } else if(controller.A.isPressed() && epona != null) {
+            pause(1000);
+            sprites.destroy(epona)
+            epona = null
+            controller.moveSprite(link, 100, 100)
         }
     }
 }
@@ -103,7 +109,7 @@ game.onUpdate(function () {
     if (epona != null) { // le cheval suit link une fois arrivé
         epona.x = link.x
         epona.y = link.y
-        controller.moveSprite(link, 200, 200)
+        
     }
 })
 
