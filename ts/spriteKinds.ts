@@ -13,6 +13,7 @@ namespace SpriteKind {
     export const BossGerudo = SpriteKind.create()
     export const BossZora = SpriteKind.create()
     export const BossPiaf = SpriteKind.create()
+    export const entitéS = SpriteKind.create()
 }
 
 //#endregion

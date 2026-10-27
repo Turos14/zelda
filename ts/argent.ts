@@ -23,7 +23,7 @@ function coffre() {
                 argent.value = rubis
             }
         }
-    } else if (game.runtime() > finMessageCoffre) {
+    } else if (game.runtime() > finMessageCoffre && !sur_relais_epona()) {
         dialogue.setFlag(SpriteFlag.Invisible, true) // cache la bulle quand link n'est plus sur un coffre
     }
     if (i == 1) {

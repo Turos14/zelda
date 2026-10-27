@@ -73,15 +73,39 @@ game.onUpdate(function () {
     verifier_mort_link();
 });
 
+let epona :any = null
+let epona_arrive = false // vrai entre l'achat et l'arrivée du cheval, pour ne pas le payer deux fois
+
+/** dit si link est sur une tuile de relais (où on peut appeler epona) */
+function sur_relais_epona() {
+    return link.tileKindAt(TileDirection.Center, assets.tile`myTile106`) || link.tileKindAt(TileDirection.Center, assets.tile`myTile107`)
+}
+
 function epona_relais_new() {
-    if (link.tileKindAt(TileDirection.Center, assets.tile`myTile106`) || link.tileKindAt(TileDirection.Center, assets.tile`myTile107`)) {
+    if (sur_relais_epona() && epona == null && !epona_arrive) {
         dialogue.sayText("Touche A: 20 rubis pour faire venir un cheval")
         dialogue.setFlag(SpriteFlag.Invisible, false)
         if (controller.A.isPressed() && rubis >= 20) {
             rubis -= 20
+            epona_arrive = true
+            control.runInParallel(function () { // pause hors du game.onUpdate pour ne pas figer le jeu 1 s
+                pause(1000);
+                epona = sprites.create(assets.image`myImage14`, SpriteKind.entitéS)
+                epona.x = link.x
+                epona.y = link.y
+                epona_arrive = false
+            })
         }
     }
 }
+
+game.onUpdate(function () {
+    if (epona != null) {
+        epona.x = link.x
+        epona.y = link.y
+        controller.moveSprite(link, 200, 200)
+    }
+})
 
 let épée_sprite: any = null
 
@@ -111,5 +135,6 @@ function coup_épée() {
 
 game.onUpdate(function () {
     epeeForever()
+    epona_relais_new()
     argent.value = rubis
 })
