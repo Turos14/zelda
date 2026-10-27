@@ -74,5 +74,11 @@ game.onUpdate(function () {
 });
 
 function epona_relais_new() {
-    
+    if (link.tileKindAt(TileDirection.Center, assets.tile`myTile106`) || link.tileKindAt(TileDirection.Center, assets.tile`myTile107`)) {
+        dialogue.sayText("Touche A: 20 rubis pour faire venir un cheval")
+        dialogue.setFlag(SpriteFlag.Invisible, false)
+        if (controller.A.isPressed() && rubis >= 20) {
+            rubis -= 20
+        }
+    }
 }
