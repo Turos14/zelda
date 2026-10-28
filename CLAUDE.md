@@ -34,12 +34,12 @@ Formatting follows `.prettierrc`: `arrowParens: avoid`, `semi: false`, `tabWidth
 
 1. `images.g.jres` / `images.g.ts` — generated image/animation assets (`assets.image\`...\``, `assets.animation\`...\``). Header says "Auto-generated code. Do not edit." — regenerate via the MakeCode asset editor or `png-to-makecode`, don't hand-edit.
 2. `tilemap.g.jres` / `tilemap.g.ts` — generated tilesets/tilemaps (`tilemap\`...\``, `assets.tile\`...\``). Same: generated, don't hand-edit directly.
-3. `ts/spriteKinds.ts` — screen size (`userconfig.ARCADE_SCREEN_WIDTH/HEIGHT`) and custom `SpriteKind`s (`épée`, `aide`, `likelikeKind`, `BossGerudo`, `BossZora`, `BossPiaf`).
-4. `ts/link.ts` — player (`link`) sprite setup (data `"vie"`/`"dégats"`, walk animation, `verifier_mort_link`) and the HUD status bars (`barreVieJoueur`, `barreEnduJoueur`, `barreFoodJoueur`, `argent`).
+3. `ts/spriteKinds.ts` — screen size (`userconfig.ARCADE_SCREEN_WIDTH/HEIGHT`) and custom `SpriteKind`s (`épée`, `aide`, `likelikeKind`, `BossGerudo`, `BossZora`, `BossPiaf`, `entitéS` — used for the Epona horse).
+4. `ts/link.ts` — player (`link`) sprite setup (data `"vie"`/`"dégats"`, walk animation, `verifier_mort_link`) and the HUD status bars (`barreVieJoueur`, `barreEnduJoueur`, `barreFoodJoueur`, `argent`), plus the sword swing (`coup_épée`, `epeeForever`) and the Epona horse relay (`epona_relais_new`: on relay tiles `myTile106`/`myTile107`, A buys a horse for 20 rupees that doubles `link`'s speed, or sends it back).
 5. `ts/argent.ts` — rupee counter (`rubis`) and chest interaction (`coffre`: a chest tile `myTile16` gives either health/food or rupees).
 6. `ts/joueur.ts` — shared top-level game state (`score`, `coup`, `nombre_de_monstre`, `dialogue`, enemy health-bar arrays, etc.) declared as module-scope `let`/`const` — other files read and mutate these directly.
-7. `ts/combat.ts` — sword-swing (`coup_épée`, `epeeForever`) and damage/health functions (`change_vie`, `change_vie_likelike`, `change_vie_boss`).
-8. `ts/monstres.ts` — enemy spawning/behavior (`creer_Monstre`, `si_tuile_cree_monstre`, `fps`, `creer_likelike`).
+7. `ts/combat.ts` — FPS measurement state (`fpsActuel`) and damage/health functions (`change_vie`, `change_vie_likelike`, `change_vie_boss`).
+8. `ts/monstres.ts` — enemy spawning/behavior (`creer_Monstre`, `si_tuile_cree_monstre`, `monstre_create`, `fps`, `creer_likelike`).
 9. `ts/gerudo_boss.ts`, `ts/zora_boss.ts`, `ts/piaf_boss.ts` — one boss fight each (`gerudoBoss()`, etc.); each is self-contained, creating its sprite, a health bar destroyed `onDestroyed`, and a `game.onUpdateInterval` distance-driven AI loop.
 10. `ts/outils.ts` — small map-size/tile-distance math helpers (`NbC`, `NbL`, `obtenirDistanceTuileLaPlusProche`).
 11. `ts/controles.ts` — global input/collision wiring (`controller.B.onEvent`, `sprites.onOverlap` for player vs. enemy/projectile/likelike/each boss kind).
@@ -48,6 +48,8 @@ Formatting follows `.prettierrc`: `arrowParens: avoid`, `semi: false`, `tabWidth
 14. `main.ts` — kept as the last entry of `files` but currently empty; game logic belongs in `ts/`.
 
 Top-level statements run in `files` order, but function bodies only run when called — so a function may reference globals from a later file (e.g. `coffre` in `argent.ts` uses `dialogue` from `joueur.ts`), whereas top-level code may not. Code in `prepare_main.ts` that blocks (`game.showLongText`, `pause`, waiting loops) delays registration of the loops in `forever.ts`.
+
+The single `dialogue` text sprite (from `joueur.ts`) is shared by every on-screen prompt (chests, Epona relay, ...), so features must avoid hiding/overwriting each other's text — e.g. `coffre` only hides it when `!sur_relais_epona()`. Long-running actions triggered from `game.onUpdate` (a `pause`) go through `control.runInParallel` so the update loop doesn't freeze.
 
 Comments and identifiers are in French (`dégats`, `vie`, `épée`, etc.) — keep new code consistent with that.
 
