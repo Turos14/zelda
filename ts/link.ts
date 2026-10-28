@@ -76,13 +76,14 @@ game.onUpdate(function () {
 let epona :any = null
 let epona_arrive = false // vrai entre l'achat et l'arrivée du cheval, pour ne pas le payer deux fois
 let rendre_epona = false
+function tuille_coffre() {
+    return (TileDirection.Center, assets.tile`myTile16` || TileDirection.Center, assets.tile`myTile17`)
+}
 
 /** dit si link est sur une tuile de relais (où on peut appeler epona) */
 function sur_relais_epona() {
     return link.tileKindAt(TileDirection.Center, assets.tile`myTile106`) || link.tileKindAt(TileDirection.Center, assets.tile`myTile107`)
 }
-
-let a = 0
 
 function epona_relais_new() {
     if (sur_relais_epona() && epona == null && !epona_arrive && rubis >= 20 ) {
@@ -96,12 +97,13 @@ function epona_relais_new() {
                 epona = sprites.create(assets.image`myImage14`, SpriteKind.entitéS)
                 epona.x = link.x
                 epona.y = link.y
+                animation.runImageAnimation(epona, assets.animation`myAnim10`, 200, true)
                 controller.moveSprite(link, 200, 200)
                 pause(1000);
                 epona_arrive = false
             })
         }
-    } else if (sur_relais_epona() && epona != null && !epona_arrive) { // sans epona != null, sprites.destroy(null) plante
+    } else if (epona != null && !epona_arrive && tuille_coffre()) { // sans epona != null, sprites.destroy(null) plante
         dialogue.sayText("Touche A: faire rentrer le cheval")
         dialogue.setFlag(SpriteFlag.Invisible, false)
         if (controller.A.isPressed()) {
@@ -116,7 +118,6 @@ function epona_relais_new() {
             })
         }
     }
-    
 }
 
 game.onUpdate(function () {
