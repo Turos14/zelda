@@ -75,40 +75,54 @@ game.onUpdate(function () {
 
 let epona :any = null
 let epona_arrive = false // vrai entre l'achat et l'arrivée du cheval, pour ne pas le payer deux fois
+let rendre_epona = false
 
 /** dit si link est sur une tuile de relais (où on peut appeler epona) */
 function sur_relais_epona() {
     return link.tileKindAt(TileDirection.Center, assets.tile`myTile106`) || link.tileKindAt(TileDirection.Center, assets.tile`myTile107`)
 }
 
+let a = 0
+
 function epona_relais_new() {
-    if (sur_relais_epona() && epona == null && !epona_arrive) {
+    if (sur_relais_epona() && epona == null && !epona_arrive && rubis >= 20 ) {
         dialogue.sayText("Touche A: 20 rubis pour faire venir un cheval")
         dialogue.setFlag(SpriteFlag.Invisible, false)
-        if (controller.A.isPressed() && rubis >= 20) {
+        if (controller.A.isPressed()) {
             rubis -= 20
             epona_arrive = true
             control.runInParallel(function () { // pause hors du game.onUpdate pour ne pas figer le jeu 1 s
-                pause(1000);
+                epona_arrive = true
                 epona = sprites.create(assets.image`myImage14`, SpriteKind.entitéS)
                 epona.x = link.x
                 epona.y = link.y
-                epona_arrive = false
                 controller.moveSprite(link, 200, 200)
+                pause(1000);
+                epona_arrive = false
             })
-        } else if(controller.A.isPressed() && epona != null) {
-            pause(1000);
-            sprites.destroy(epona)
+        }
+    } else if (sur_relais_epona() && epona != null && !epona_arrive) { // sans epona != null, sprites.destroy(null) plante
+        dialogue.sayText("Touche A: faire rentrer le cheval")
+        dialogue.setFlag(SpriteFlag.Invisible, false)
+        if (controller.A.isPressed()) {
+            epona_arrive = true // tout de suite, sinon A maintenu relance le retour à la frame suivante
+            let cheval = epona
             epona = null
-            controller.moveSprite(link, 100, 100)
+            control.runInParallel(function () {
+                sprites.destroy(cheval)
+                controller.moveSprite(link, 100, 100)
+                pause(1000);
+                epona_arrive = false
+            })
         }
     }
+    
 }
 
 game.onUpdate(function () {
     if (epona != null) { // le cheval suit link une fois arrivé
         epona.x = link.x
-        epona.y = link.y
+        epona.y = link.y + 16
         
     }
 })

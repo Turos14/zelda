@@ -2,24 +2,27 @@
 
 /** éxécuté toute les 500 ms enlève ou rajoute de l'endu */
 function enduF() {
-    if (enduV > 0 && enduR) { // enduR = true || false / quand l'endu est à zero cette variable permet de dire de rajouté de l'endu et baissé sa vitesse 
-        if (controller.left.isPressed() || controller.up.isPressed() || controller.down.isPressed() || controller.right.isPressed()) {
-            enduV = Math.max(0, enduV - 10) // valeur de l'endu, jamais négative
-        } else {
-            if (enduV < 100) {
-                enduV += 5
+    if (!epona) {
+        if (enduV > 0 && enduR) { // enduR = true || false / quand l'endu est à zero cette variable permet de dire de rajouté de l'endu et baissé sa vitesse 
+            if (controller.left.isPressed() || controller.up.isPressed() || controller.down.isPressed() || controller.right.isPressed()) {
+                enduV = Math.max(0, enduV - 10) // valeur de l'endu, jamais négative
+            } else {
+                if (enduV < 100) {
+                    enduV += 5
+                }
             }
+            controller.moveSprite(link, 100, 100) // vxM = vyM = 100
+        } else {
+            enduR = false
+            enduV += 5
+            if (enduV == 100) {
+                enduR = true
+            }
+            controller.moveSprite(link, 50, 50) // vxM = vyM = 50
         }
-        controller.moveSprite(link, 100, 100) // vxM = vyM = 100
-    } else {
-        enduR = false
-        enduV += 5
-        if (enduV == 100) {
-            enduR = true
-        }
-        controller.moveSprite(link, 50, 50) // vxM = vyM = 50
+        barreEnduJoueur.value = enduV// mais a jour la bar de vie
+
     }
-    barreEnduJoueur.value = enduV// mais a jour la bar de vie
 }
 
 //#endregion
